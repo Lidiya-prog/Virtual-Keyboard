@@ -75,12 +75,17 @@ export default class Keyboard {
         this.elements.keysContainer.classList.add('keyboard__keys')
         this.elements.keysContainer.appendChild(this.createKeys())
 
+        // this.elements.keys = this.elements.keyboardContainer.querySelectorAll('.key');
+
         const container = document.querySelector('.main-container')
 
         this.elements.main.appendChild(this.elements.textarea)
         this.elements.main.appendChild(this.elements.keysContainer)
 
         container.appendChild(this.elements.main)
+
+        this.elements.textarea.addEventListener('keyup', (event) => this.keyboardClick(event));
+        this.elements.textarea.addEventListener('keydown', (event) => this.keyboardClick(event));
 
 
 
@@ -91,7 +96,7 @@ export default class Keyboard {
         const keyLayout = this.layouts[this.properties.lang]
         const iconForKey = (iconName) => `<span class="material-icons">${iconName}</span>`;
 
-        keyLayout.forEach(key => {
+        keyLayout.forEach((key, idx) => {
             const keyElem = document.createElement('button')
             keyElem.setAttribute('type', 'button');
             keyElem.classList.add('key');
@@ -178,6 +183,9 @@ export default class Keyboard {
                     break;
             }
 
+            keyElem.setAttribute('data-key', key);
+            keyElem.setAttribute('data-code', this.keyCodes[idx]);
+
             keyElem.addEventListener('click', (event) => this.mouseClick(event));
 
             fragment.appendChild(keyElem);
@@ -190,22 +198,185 @@ export default class Keyboard {
 
     }
 
-    triggerEvent(eventHandler) {
-        console.log('event triggered!')
-    }
+    // triggerEvent(eventHandler) {
+    //     console.log('event triggered!')
+    //     if (typeof this.eventHandler[eventHandler] == 'function') {
+    //         this.eventsHandlers[eventHandler](this.properties.value)
+    //     }
+    // }
 
     onCapslock() {
-        console.log('Caps!!!')
+        this.properties.isCapsLock = !this.properties.isCapsLock
+
+        // for (let key of this.elements.keys) {
+        //     if (key.childElementCount === 0) {
+        //         key.textContent = this.properties.isCapsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
+        //     }
+        // }
+        const keys = document.querySelectorAll('.symbol')
+        this.changeKeys(keys)
     }
 
-    open(initialValue, oninput, onclose) {
-
+    onShift(elem = null) {
+        this.properties.isShiftPressed = !this.properties.isShiftPressed;
+        const shifts = this.elements.keyboardContainer.querySelectorAll('.shift');
+        const keys = this.elements.keyboardContainer.querySelectorAll('.symbol');
+        if (this.properties.isShiftPressed) {
+            if (elem !== null) node.classList.add('pressed');
+        } else {
+            shifts.forEach((key) => key.classList.remove('pressed'));
+        }
+        this.changeKeys(keys);
     }
 
-    close() {
+    // open(initialValue, oninput, onclose) {
 
+    // }
+
+    // close() {
+
+    // }
+
+    mouseClick(event) {
+        let target = event.currentTarget
+        debugger
+        // console.log(target)
+        if (target) {
+            let name = target.dataset.code
+            let textarea = this.elements.textarea
+            let cursor = textarea.selectionStart + 1
+            let [value, start, end] = [
+                this.getChar(name),
+                textarea.selectionStart,
+                textarea.selectionEnd
+            ]
+
+
+            switch (name) {
+                case 'Delete':
+                    value = ''
+                    end = textarea.selectionStart === textarea.selectionEnd ? textarea.selectionStart + 1 : textarea.selectionStart
+                    break;
+                case 'Backspace':
+                    value = ''
+                    start = textarea.selectionStart === textarea.selectionEnd ? textarea.selectionStart - 1 : textarea.selectionStart
+                    break;
+                case 'Enter':
+                    value = '\n'
+                    break;
+                case 'Tab':
+                    value = '\t'
+                    break;
+                case 'Space':
+                    value = ' '
+                    break;
+                case 'CapsLock':
+                    [value, cursor] = ['', textarea.selectionStart]
+                    this.onCapslock()
+
+                    //TODO добавить классы
+                    break;
+                case 'ShiftRight':
+                case 'ShiftLeft':
+                    [value, cursor] = ['', textarea.selectionStart];
+                    this.onShift(target);
+                    break;
+                case 'ControlLeft':
+                case 'ControlRight':
+                    name.classList.toggle('pressed');
+                    this.properties.isCtrlPressed = !this.properties.isCtrlPressed;
+                    [value, cursor] = ['', textarea.selectionStart];
+                    break;
+                case 'AltLeft':
+                case 'AltRight':
+                    name.classList.toggle('pressed');
+                    this.properties.isAltPressed = !this.properties.isAltPressed;
+                    [value, cursor] = ['', textarea.selectionStart];
+                    break;
+                case 'MetaLeft':
+                    [value, cursor] = ['', textarea.selectionStart];
+                    break;
+                case 'ArrowUp':
+                    value = '∧';
+                    break;
+                case 'ArrowDown':
+                    value = '∨';
+                    break;
+                case 'ArrowLeft':
+                    value = '<';
+                    break;
+                case 'ArrowRight':
+                    value = '>';
+                    break;
+                default:
+                    break;
+            }
+            if (start >= 0) {
+                textarea.setRangeText(value, start, end)
+            }
+
+            if (name === 'Delete' || name === 'Backspace') {
+                cursor = textarea.selectionStart
+            }
+
+            //todo сделать проверку на шифт и смену языка
+
+            this.getShift(name)
+
+
+            this.elements.textarea.focus()
+            this.elements.textarea.selectionStart = cursor
+
+
+
+        }
+    }
+
+    getChar(name) {
+        let index = this.keyCodes.indexOf(name)
+        let [lang, langShift] = [this.properties.lang, `${this.properties.lang}Shift`]
+        let char = this.layouts[lang][index]
+        let charKey = this.properties.isCapsLock ? char.toUpperCase() : char.toLowerCase()
+
+        if (this.properties.isShiftPressed) {
+            charKey = this.layouts[langShift][index]
+        }
+
+        return (this.properties.isCapsLock && this.properties.isShiftPressed) ? charKey.toLowerCase() : charKey
+    }
+
+    getShift(elem) {
+        if (elem !== 'ShiftLeft' && elem !== 'ShiftRight' && elem !== 'CapsLock') {
+            if (this.properties.isShiftPressed) this.onShift();
+        }
+    }
+
+    changeKeys(elements) {
+        elements.forEach(elem => {
+            elem.textContent = this.getChar(elem.dataset.code)
+        })
+    }
+
+    keyboardClick(event) {
+        // debugger
+        if (event.type === 'keydown' && event.code !== 'F5') {
+            event.preventDefault();
+        }
+        const keys = this.elements.keysContainer.querySelectorAll('.key');
+        this.keyCodes.forEach((keyCode, index) => {
+            if (event.code === keyCode) {
+                this.elements.el = keys[index];
+                this.elements.el.classList.add('pressed');
+            }
+        });
+        if (event.type === 'keyup') {
+            this.mouseClick(keys[this.keyCodes.indexOf(event.code)]);
+            // this.removePressed();
+        }
     }
 }
+
+
 
 // window.addEventListener('DOMContentLoaded', function() {
 //     Keyboard.init()

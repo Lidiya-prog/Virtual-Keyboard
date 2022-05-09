@@ -72,6 +72,9 @@ body {
   background: rgba(0, 0, 0, 0.4);
   border-radius: 50%;
 }
+.key.pressed {
+  background: rgba(189, 35, 35, 0.56);
+}
 
 .keyboard__key:active {
   background: rgba(189, 35, 35, 0.56);

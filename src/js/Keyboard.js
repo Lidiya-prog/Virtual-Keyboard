@@ -112,7 +112,7 @@ export default class Keyboard {
         elemOS.classList.add('description')
 
         const elemChange = document.createElement('div')
-        elemChange.textContent = 'Клавиши для переключения языка - Ctrl + Alt'
+        elemChange.textContent = 'Переключение языка: Ctrl + Alt'
         elemChange.classList.add('description')
 
         this.elements.main.appendChild(elemOS)

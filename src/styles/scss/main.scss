@@ -6,14 +6,32 @@ body {
 
 .main-container {
   height: 100%;
-  width: 100%;
-  margin: 50px auto;
+  width: 95%;
+  margin: 30px auto;
+
+  h1 {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
+    color: #d51062bf;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 36px;
+    font-weight: normal;
+  }
 
   .text-input {
-    width: 80%;
-    height: 300px;
+    width: 90%;
+    height: 250px;
     display: flex;
-    margin: 0 auto 50px;
+    margin: 0 auto 30px;
+  }
+
+  .description {
+    font-size: 18px;
+    font-weight: normal;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin-bottom: 10px;
   }
 }
 
@@ -22,21 +40,18 @@ body {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-}
 
-.keyboard--hidden {
-  bottom: -100%;
-}
-
-.keyboard__keys {
-  text-align: center;
-  width: 90%;
-  height: 100%;
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 6px;
+  &__keys {
+    text-align: center;
+    width: 90%;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 15px;
+  }
 }
 
 .key {
@@ -61,16 +76,6 @@ body {
   }
   &.extra-wide {
     width: 46%;
-  }
-  &--activatable::after {
-    content: '';
-    top: 10px;
-    right: 10px;
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 50%;
   }
   &.pressed,
   &.key:active {

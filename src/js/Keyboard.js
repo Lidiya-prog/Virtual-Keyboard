@@ -77,17 +77,46 @@ export default class Keyboard {
 
         this.elements.keys = this.elements.keysContainer.querySelectorAll('.key');
 
-        const container = document.querySelector('.main-container')
+        // const container = document.querySelector('.main-container')
 
-        this.elements.main.appendChild(this.elements.textarea)
-        this.elements.main.appendChild(this.elements.keysContainer)
 
-        container.appendChild(this.elements.main)
+
+        // container.appendChild(this.elements.main)
+
+        this.renderKeyboard()
 
         this.elements.textarea.addEventListener('keyup', (event) => this.keyboardClick(event));
         this.elements.textarea.addEventListener('keydown', (event) => this.keyboardClick(event));
 
 
+
+    }
+
+    renderKeyboard() {
+        const container = document.createElement('div')
+        container.classList.add('main-container')
+        container.appendChild(this.elements.main)
+
+        document.body.prepend(container)
+
+        const header = document.createElement('h1')
+        header.textContent = 'RSS Virtual Keyboard'
+
+        container.prepend(header)
+
+        this.elements.main.appendChild(this.elements.textarea)
+        this.elements.main.appendChild(this.elements.keysContainer)
+
+        const elemOS = document.createElement('div')
+        elemOS.textContent = 'Клавиатура создана в  ОС Windows'
+        elemOS.classList.add('description')
+
+        const elemChange = document.createElement('div')
+        elemChange.textContent = 'Клавиши для переключения языка - Ctrl + Alt'
+        elemChange.classList.add('description')
+
+        this.elements.main.appendChild(elemOS)
+        this.elements.main.appendChild(elemChange)
 
     }
 

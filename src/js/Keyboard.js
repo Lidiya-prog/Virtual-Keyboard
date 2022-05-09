@@ -20,7 +20,7 @@ export default class Keyboard {
                 isShiftPressed: false,
                 isCtrlPressed: false,
                 isAltPressed: false,
-                isLangSwitched: false,
+                isLangChanged: false,
                 lang: 'en',
             }
         this.layouts = {
@@ -100,44 +100,23 @@ export default class Keyboard {
             const keyElem = document.createElement('button')
             keyElem.setAttribute('type', 'button');
             keyElem.classList.add('key');
-            // const insertLineBreak = ["backspace", "p", "enter", "?"].indexOf(key) !== -1;
 
             switch (key) {
                 case 'backspace':
                     keyElem.classList.add('wide')
                     keyElem.innerHTML = iconForKey('backspace');
-
-                    // keyElem.addEventListener('click', ()=> {
-                    //     this.properties.value = this.properties.value.substring(0,-1)
-                    //     this.triggerEvent(oninput)
-                    // })
                     break;
                 case 'capslock':
-                    keyElem.classList.add('wide', 'activalable')
+                    keyElem.classList.add('wide')
                     keyElem.innerHTML = iconForKey('keyboard_capslock');
-
-                    // keyElem.addEventListener('click', () => {
-                    //     this.onCapslock()
-                    //     keyElem.classList.add('--active', this.properties.isCapsLock)
-                    // })
                     break;
                 case 'enter':
                     keyElem.classList.add('wide')
                     keyElem.innerHTML = iconForKey('keyboard_return');
-
-                    // keyElem.addEventListener('click', ()=> {
-                    //     this.properties.value += '\n'
-                    //     this.triggerEvent(oninput)
-                    // })
                     break;
                 case 'spacebar':
                     keyElem.classList.add('extra-wide')
                     keyElem.innerHTML = iconForKey('space_bar');
-
-                    // keyElem.addEventListener('click', ()=> {
-                    //     this.properties.value += ' '
-                    //     this.triggerEvent(oninput)
-                    // })
                     break;
                 case 'leftctrl':
                 case 'rightctrl':
@@ -176,10 +155,6 @@ export default class Keyboard {
                 default:
                     keyElem.classList.add('symbol');
                     keyElem.innerHTML = key.toLowerCase();
-                    // keyElem.addEventListener('click', () => {
-                    //     this.properties.value += this.properties.isCapsLock ? key.toUpperCase() : key.toLowerCase()
-                    //     this.triggerEvent(oninput)
-                    // })
                     break;
             }
 
@@ -189,31 +164,15 @@ export default class Keyboard {
             keyElem.addEventListener('click', (event) => this.keyClick(event));
 
             fragment.appendChild(keyElem);
-            // if (insertLineBreak) {
-            //     fragment.appendChild(document.createElement("br"));
-            // }
         })
 
         return fragment;
 
     }
 
-    // triggerEvent(eventHandler) {
-    //     console.log('event triggered!')
-    //     if (typeof this.eventHandler[eventHandler] == 'function') {
-    //         this.eventsHandlers[eventHandler](this.properties.value)
-    //     }
-    // }
-
     onCapslock() {
         this.properties.isCapsLock = !this.properties.isCapsLock
-
-        // for (let key of this.elements.keys) {
-        //     if (key.childElementCount === 0) {
-        //         key.textContent = this.properties.isCapsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase()
-        //     }
-        // }
-        const keys = document.querySelectorAll('.symbol')
+        const keys = this.elements.keysContainer.querySelectorAll('.symbol')
         this.changeKeys(keys)
     }
 
@@ -316,17 +275,12 @@ export default class Keyboard {
                 cursor = textarea.selectionStart
             }
 
-            //todo сделать проверку на шифт и смену языка
+            this.getShift(name)
 
-
-            this.getShift(elem)
-
+            this.getIsChangeLang(name)
 
             this.elements.textarea.focus()
             this.elements.textarea.selectionStart = cursor
-
-
-
         }
     }
 
@@ -345,9 +299,44 @@ export default class Keyboard {
 
     getShift(elem) {
         if (elem !== 'ShiftLeft' && elem !== 'ShiftRight' && elem !== 'CapsLock') {
-            if (this.properties.isShiftPressed) this.onShift();
+            if (this.properties.isShiftPressed) {
+                this.onShift()
+            }
         }
     }
+
+    getIsChangeLang(elem) {
+        if (elem === 'ControlLeft' || elem === 'ControlRight') {
+            if (!this.properties.isCtrlPressed) {
+                this.removePressClass();
+            }
+            if (this.properties.isCtrlPressed && this.properties.isAltPressed) {
+                this.changeLang();
+            }
+        } else if (elem === 'AltLeft' || elem === 'AltRight') {
+            if (!this.properties.isAltPressed) {
+                this.removePressClass();
+            }
+            if (this.properties.isCtrlPressed && this.properties.isAltPressed) {
+                this.changeLang();
+            }
+        } else {
+            this.properties.isAltPressed = false;
+            this.properties.isCtrlPressed = false;
+            this.removePressClass();
+        }
+    }
+
+    getLang() {
+        return this.properties.lang
+    }
+
+    setLang(value) {
+        this.properties.lang = value
+        const keys = this.elements.keysContainer.querySelectorAll('.symbol')
+        this.changeKeys(keys)
+    }
+
 
     changeKeys(elements) {
         elements.forEach(elem => {
@@ -366,8 +355,10 @@ export default class Keyboard {
                 this.elements.el.classList.add('pressed');
             }
         });
-        if (event.type === 'keyup') {
+        // debugger
+        if (event.type === 'keyup' || event.type === 'keydown' && event.code === 'CapsLock') {
             let idx = this.keyCodes.indexOf(event.code)
+            // debugger
             this.addText(keys[idx]);
             this.removePressClass();
         }
@@ -381,10 +372,14 @@ export default class Keyboard {
             }
         });
     }
+
+    changeLang() {
+        this.properties.isLangChanged = !this.properties.isLangChanged
+        this.properties.lang = (this.properties.lang === 'ru') ? 'en' : 'ru'
+        const keys = this.elements.keysContainer.querySelectorAll('.symbol')
+        this.changeKeys(keys);
+        this.properties.isCtrlPressed = false;
+        this.properties.isAltPressed = false;
+        this.removePressClass();
+    }
 }
-
-
-
-// window.addEventListener('DOMContentLoaded', function() {
-//     Keyboard.init()
-// })

@@ -75,7 +75,7 @@ export default class Keyboard {
         this.elements.keysContainer.classList.add('keyboard__keys')
         this.elements.keysContainer.appendChild(this.createKeys())
 
-        // this.elements.keys = this.elements.keyboardContainer.querySelectorAll('.key');
+        this.elements.keys = this.elements.keysContainer.querySelectorAll('.key');
 
         const container = document.querySelector('.main-container')
 
@@ -186,7 +186,7 @@ export default class Keyboard {
             keyElem.setAttribute('data-key', key);
             keyElem.setAttribute('data-code', this.keyCodes[idx]);
 
-            keyElem.addEventListener('click', (event) => this.mouseClick(event));
+            keyElem.addEventListener('click', (event) => this.keyClick(event));
 
             fragment.appendChild(keyElem);
             // if (insertLineBreak) {
@@ -219,30 +219,23 @@ export default class Keyboard {
 
     onShift(elem = null) {
         this.properties.isShiftPressed = !this.properties.isShiftPressed;
-        const shifts = this.elements.keyboardContainer.querySelectorAll('.shift');
-        const keys = this.elements.keyboardContainer.querySelectorAll('.symbol');
+        const shifts = this.elements.keysContainer.querySelectorAll('.shift');
+        const keys = this.elements.keysContainer.querySelectorAll('.symbol');
         if (this.properties.isShiftPressed) {
-            if (elem !== null) node.classList.add('pressed');
+            if (elem !== null) elem.classList.add('pressed');
         } else {
             shifts.forEach((key) => key.classList.remove('pressed'));
         }
         this.changeKeys(keys);
     }
 
-    // open(initialValue, oninput, onclose) {
+    keyClick(event) {
+        this.addText(event.currentTarget)
+    }
 
-    // }
-
-    // close() {
-
-    // }
-
-    mouseClick(event) {
-        let target = event.currentTarget
-        debugger
-        // console.log(target)
-        if (target) {
-            let name = target.dataset.code
+    addText(elem) {
+        if (elem) {
+            let name = elem.dataset.code
             let textarea = this.elements.textarea
             let cursor = textarea.selectionStart + 1
             let [value, start, end] = [
@@ -271,25 +264,29 @@ export default class Keyboard {
                     value = ' '
                     break;
                 case 'CapsLock':
+                    if (!this.properties.isCapsLock) {
+                        elem.classList.add('pressed');
+                    } else {
+                        elem.classList.remove('pressed');
+                    }
                     [value, cursor] = ['', textarea.selectionStart]
                     this.onCapslock()
-
-                    //TODO добавить классы
                     break;
                 case 'ShiftRight':
                 case 'ShiftLeft':
                     [value, cursor] = ['', textarea.selectionStart];
-                    this.onShift(target);
+                    this.onShift(elem);
                     break;
                 case 'ControlLeft':
                 case 'ControlRight':
-                    name.classList.toggle('pressed');
+                    elem.classList.toggle('pressed');
+
                     this.properties.isCtrlPressed = !this.properties.isCtrlPressed;
                     [value, cursor] = ['', textarea.selectionStart];
                     break;
                 case 'AltLeft':
                 case 'AltRight':
-                    name.classList.toggle('pressed');
+                    elem.classList.toggle('pressed');
                     this.properties.isAltPressed = !this.properties.isAltPressed;
                     [value, cursor] = ['', textarea.selectionStart];
                     break;
@@ -321,7 +318,8 @@ export default class Keyboard {
 
             //todo сделать проверку на шифт и смену языка
 
-            this.getShift(name)
+
+            this.getShift(elem)
 
 
             this.elements.textarea.focus()
@@ -358,7 +356,6 @@ export default class Keyboard {
     }
 
     keyboardClick(event) {
-        // debugger
         if (event.type === 'keydown' && event.code !== 'F5') {
             event.preventDefault();
         }
@@ -370,9 +367,19 @@ export default class Keyboard {
             }
         });
         if (event.type === 'keyup') {
-            this.mouseClick(keys[this.keyCodes.indexOf(event.code)]);
-            // this.removePressed();
+            let idx = this.keyCodes.indexOf(event.code)
+            this.addText(keys[idx]);
+            this.removePressClass();
         }
+    }
+
+    removePressClass() {
+        const keys = this.elements.keysContainer.querySelectorAll('.key');
+        keys.forEach((key) => {
+            if (key.dataset.code !== 'ShiftLeft' && key.dataset.code !== 'ShiftRight' && key.dataset.code !== 'CapsLock') {
+                key.classList.remove('pressed');
+            }
+        });
     }
 }
 

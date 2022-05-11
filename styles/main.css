@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: rgba(243, 224, 240, 0.4784313725);
+}
+
+.main-container {
+  height: 100%;
+  width: 95%;
+  margin: 30px auto;
+}
+.main-container h1 {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 10px;
+  color: rgba(213, 16, 98, 0.7490196078);
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 36px;
+  font-weight: normal;
+}
+.main-container .text-input {
+  width: 90%;
+  height: 250px;
+  display: flex;
+  margin: 0 auto 30px;
+}
+.main-container .description {
+  font-size: 18px;
+  font-weight: normal;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  margin-bottom: 10px;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.keyboard__keys {
+  text-align: center;
+  width: 90%;
+  height: 100%;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+.key {
+  height: 45px;
+  width: 6%;
+  border-radius: 4px;
+  border: none;
+  background: rgba(189, 35, 35, 0.2);
+  color: #ffffff;
+  font-size: 1.05rem;
+  outline: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: top;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.key.wide {
+  width: 13%;
+}
+.key.extra-wide {
+  width: 46%;
+}
+.key.pressed, .key.key:active {
+  background: rgba(189, 35, 35, 0.56);
+}
+
+/*# sourceMappingURL=main.css.map */

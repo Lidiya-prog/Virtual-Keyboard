@@ -1,0 +1,32 @@
+{
+  "name": "virtual-keyboard",
+  "version": "1.0.0",
+  "description": "RSS Virtual Keyboard",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lidiya-prog/Virtual-Keyboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lidiya-prog/Virtual-Keyboard/issues"
+  },
+  "homepage": "https://github.com/Lidiya-prog/Virtual-Keyboard#readme",
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
+  },
+  "dependencies": {
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "normalize.css": "^8.0.1",
+    "prettier": "^2.6.2",
+    "sass": "^1.51.0"
+  },
+  "type": "module"
+}
